@@ -510,7 +510,9 @@
       const phoneWidth = Math.abs(rotation % 180) === 90 ? currentDevice.frame.h : currentDevice.frame.w;
       const phoneHeight = Math.abs(rotation % 180) === 90 ? currentDevice.frame.w : currentDevice.frame.h;
 
-      let fitScale = Math.min(stageWidth / phoneWidth, stageHeight / phoneHeight) * 0.9;
+      const isLandscape = Math.abs(rotation % 180) === 90;
+      const margin = isLandscape ? 0.95 : 0.9;
+      let fitScale = Math.min(stageWidth / phoneWidth, stageHeight / phoneHeight) * margin;
       const finalScale = fitScale * manualScale;
 
       currentPos.x += (targetPos.x - currentPos.x) * 0.18;
