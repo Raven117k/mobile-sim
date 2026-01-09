@@ -485,13 +485,13 @@
       const phoneWidth = isLandscape ? device.frame.h : device.frame.w;
       const phoneHeight = isLandscape ? device.frame.w : device.frame.h;
 
+      phone.style.width = `${phoneWidth}px`;
+      phone.style.height = `${phoneHeight}px`;
+      frame.style.width = `${phoneWidth}px`;
+      frame.style.height = `${phoneHeight}px`;
+
       viewportContainer.style.top = `${(phoneHeight - viewport.height) / 2}px`;
       viewportContainer.style.left = `${(phoneWidth - viewport.width) / 2}px`;
-
-      // rotate the viewport itself
-      viewportContainer.style.transform = isLandscape
-        ? `rotate(${rotation}deg)`
-        : `rotate(0deg)`;
 
       // status bar and iframe
       statusBar.style.height = `${device.statusBarHeight}px`;
@@ -516,7 +516,8 @@
       currentPos.x += (targetPos.x - currentPos.x) * 0.18;
       currentPos.y += (targetPos.y - currentPos.y) * 0.18;
 
-      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale}) rotate(${rotation}deg)`;
+      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale})`;
+      phone.style.transform = `rotate(${rotation}deg)`;
     }
 
     function loadDevice() {
@@ -535,7 +536,7 @@
       frame.style.height = `${currentDevice.frame.h}px`;
 
       let url = urlInput.value.trim();
-      if (url && !url.startsWith("http")) url = "https://" + url;
+      if (url && !url.startsWith("http")) url = "https://"+url;
       iframe.src = url || "about:blank";
 
       applyTransform();
