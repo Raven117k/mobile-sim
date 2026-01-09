@@ -40,7 +40,6 @@
       position: relative;
     }
 
-    /* LEFT SIDEBAR */
     .controls {
       width: var(--sidebar-width);
       min-width: var(--sidebar-width-mobile);
@@ -133,7 +132,6 @@
       cursor: pointer;
     }
 
-    /* ROTATE BUTTONS */
     .rotate-buttons {
       display: flex;
       gap: 8px;
@@ -156,7 +154,6 @@
       color: #000;
     }
 
-    /* BACKSTAGE COLOR INLINE */
     .backstage-setting {
       display: flex;
       justify-content: space-between;
@@ -179,7 +176,6 @@
       box-shadow: 0 0 6px var(--accent-color);
     }
 
-    /* STAGE */
     .stage {
       flex: 1;
       position: relative;
@@ -203,7 +199,6 @@
       transform-origin: center;
     }
 
-    /* LABEL + MOVE HANDLE */
     .device-header {
       position: absolute;
       top: -64px;
@@ -249,10 +244,9 @@
       opacity: 0.75;
     }
 
-    /* VIEWPORT CONTAINER */
     .viewport-container {
       position: absolute;
-      background: transparent; /* <-- make transparent so no bottom bar */
+      background: transparent;
       overflow: hidden;
       z-index: 1;
     }
@@ -275,7 +269,6 @@
       left: 0;
     }
 
-    /* FAKE STATIC STATUS BAR */
     .status-bar {
       position: absolute;
       top: 0;
@@ -317,7 +310,6 @@
       font-size: 13px;
     }
 
-    /* Device-specific styling */
     .device-android .status-bar {
       background: #fff;
       color: #000;
@@ -380,7 +372,8 @@
                 <span><i class="fas fa-battery-full"></i></span>
               </div>
             </div>
-            <iframe id="appFrame" title="Mobile Preview" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+            <iframe id="appFrame" title="Mobile Preview"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
           </div>
 
           <img id="frame" class="phone-frame" alt="Device frame">
@@ -393,47 +386,46 @@
 
   <script>
     const DEVICES = {
-      iphoneSE: { 
-        name: "iPhone SE", 
-        viewport: { w: 330, h: 565 }, 
+      iphone8: {
+        name: "iPhone 8 / SE2 / SE3",
+        viewport: { w: 330, h: 565 },
         frame: { w: 363, h: 750 },
         statusBarHeight: 20,
         type: "ios",
         image: "./frames/iphone-se.png"
       },
-      iphone14: { 
-        name: "iPhone 14", 
-        viewport: { w: 350, h: 805 }, 
-        frame: { w: 390, h: 844 }, 
+      iphone14: {
+        name: "iPhone 14",
+        viewport: { w: 350, h: 805 },
+        frame: { w: 390, h: 844 },
         statusBarHeight: 32,
         type: "ios",
         image: "./frames/iphone14.png"
       },
-      iphone14Pro: { 
-        name: "iPhone 14 Pro", 
-        viewport: { w: 393, h: 852 }, 
-        frame: { w: 393, h: 852 }, 
+      iphone14Pro: {
+        name: "iPhone 14 Pro",
+        viewport: { w: 393, h: 852 },
+        frame: { w: 393, h: 852 },
         statusBarHeight: 59,
         type: "ios",
         image: "https://uploads-ssl.webflow.com/61f50d4b7b6ec346656e2b57/637e9d9c18bde3563e5f0fb6_iPhone%2014.svg"
       },
-      pixel7: { 
-        name: "Pixel 7", 
-        viewport: { w: 420, h: 915 }, 
+      pixel7: {
+        name: "Pixel 7",
+        viewport: { w: 420, h: 915 },
         frame: { w: 450, h: 960 },
         statusBarHeight: 32,
         type: "android",
         image: "./frames/pixel7.png"
       },
-      samsungS22: { 
-        name: "Samsung S22", 
-        viewport: { w: 335, h: 720 }, 
-        frame: { w: 363, h: 750 }, 
+      samsungS22: {
+        name: "Samsung S22",
+        viewport: { w: 335, h: 720 },
+        frame: { w: 363, h: 750 },
         statusBarHeight: 24,
         type: "android",
         image: "./frames/s22.png"
       },
-      
     };
 
     const phone = document.getElementById("phone");
@@ -450,7 +442,6 @@
     const statusBar = document.getElementById("statusBar");
     const viewportContainer = document.getElementById("viewportContainer");
 
-    // Populate device dropdown
     for (const key in DEVICES) {
       const option = document.createElement("option");
       option.value = key;
@@ -468,178 +459,139 @@
 
     function calculateViewportDimensions(device) {
       const isLandscape = Math.abs(rotation % 180) === 90;
-      
-      if (isLandscape) {
-        // Swap dimensions for landscape
-        return {
-          width: device.viewport.h,
-          height: device.viewport.w
-        };
-      }
-      
-      return {
-        width: device.viewport.w,
-        height: device.viewport.h
-      };
+      return isLandscape
+        ? { width: device.viewport.h, height: device.viewport.w }
+        : { width: device.viewport.w, height: device.viewport.h };
     }
 
     function updateDeviceClass(deviceType) {
       phone.classList.remove('device-ios', 'device-android', 'landscape');
       phone.classList.add(`device-${deviceType}`);
-      
-      if (Math.abs(rotation % 180) === 90) {
-        phone.classList.add('landscape');
-      }
-    }
-
-    function applyTransform() {
-      if (!currentDevice) return;
-      
-      const stageWidth = stage.clientWidth;
-      const stageHeight = stage.clientHeight;
-      
-      // Calculate scale that fits the stage
-      let fitScale = Math.min(stageWidth / currentDevice.frame.w, stageHeight / currentDevice.frame.h) * 0.9;
-      
-      // Apply manual scaling
-      const finalScale = fitScale * manualScale;
-      
-      // Smooth movement
-      currentPos.x += (targetPos.x - currentPos.x) * 0.18;
-      currentPos.y += (targetPos.y - currentPos.y) * 0.18;
-      
-      // Apply transformation
-      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale}) rotate(${rotation}deg)`;
+      if (Math.abs(rotation % 180) === 90) phone.classList.add('landscape');
     }
 
     function setupViewportContainer(device) {
       const isLandscape = Math.abs(rotation % 180) === 90;
-      const viewport = calculateViewportDimensions(device);
-      
-      // Set container dimensions
+
+      // swap viewport width/height in landscape
+      const viewport = isLandscape
+        ? { width: device.viewport.h, height: device.viewport.w }
+        : { width: device.viewport.w, height: device.viewport.h };
+
+      // Position viewport inside the phone frame correctly
+      const phoneWidth = isLandscape ? device.frame.h : device.frame.w;
+      const phoneHeight = isLandscape ? device.frame.w : device.frame.h;
+
+      // Center viewport inside phone
+      const top = (phoneHeight - viewport.height) / 2;
+      const left = (phoneWidth - viewport.width) / 2;
+
       viewportContainer.style.width = `${viewport.width}px`;
       viewportContainer.style.height = `${viewport.height}px`;
-      
-      if (isLandscape) {
-        // For landscape, we need to position the container properly
-        viewportContainer.style.top = `${(device.frame.h - viewport.height) / 2}px`;
-        viewportContainer.style.left = `${(device.frame.w - viewport.width) / 2}px`;
-      } else {
-        // For portrait, center the container
-        viewportContainer.style.top = `${(device.frame.h - viewport.height) / 2}px`;
-        viewportContainer.style.left = `${(device.frame.w - viewport.width) / 2}px`;
-      }
-      
-      // Update status bar height
+      viewportContainer.style.top = `${top}px`;
+      viewportContainer.style.left = `${left}px`;
+
+      // Remove any rotation on viewport itself
+      viewportContainer.style.transform = `rotate(0deg)`;
+
+      // status bar and iframe
       statusBar.style.height = `${device.statusBarHeight}px`;
-      
-      // Update iframe to fill remaining space below status bar
       iframe.style.height = `calc(100% - ${device.statusBarHeight}px)`;
       iframe.style.top = `${device.statusBarHeight}px`;
-      
-      // Update device type class
+
       updateDeviceClass(device.type);
+    }
+
+
+
+
+    function applyTransform() {
+      if (!currentDevice) return;
+      const stageWidth = stage.clientWidth;
+      const stageHeight = stage.clientHeight;
+      const phoneWidth = Math.abs(rotation % 180) === 90 ? currentDevice.frame.h : currentDevice.frame.w;
+      const phoneHeight = Math.abs(rotation % 180) === 90 ? currentDevice.frame.w : currentDevice.frame.h;
+
+      let fitScale = Math.min(stageWidth / phoneWidth, stageHeight / phoneHeight) * 0.9;
+      const finalScale = fitScale * manualScale;
+
+      currentPos.x += (targetPos.x - currentPos.x) * 0.18;
+      currentPos.y += (targetPos.y - currentPos.y) * 0.18;
+
+      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale}) rotate(${rotation}deg)`;
     }
 
     function loadDevice() {
       const deviceKey = deviceSelect.value;
       currentDevice = DEVICES[deviceKey];
-      
       if (!currentDevice) return;
-      
+
       deviceLabel.textContent = currentDevice.name;
-      
-      // Set phone dimensions
       phone.style.width = `${currentDevice.frame.w}px`;
       phone.style.height = `${currentDevice.frame.h}px`;
-      
-      // Setup viewport container with status bar
+
       setupViewportContainer(currentDevice);
-      
-      // Update frame image
+
       frame.src = currentDevice.image;
       frame.style.width = `${currentDevice.frame.w}px`;
       frame.style.height = `${currentDevice.frame.h}px`;
-      
-      // Load URL
+
       let url = urlInput.value.trim();
-      if (url && !url.startsWith("http")) {
-        url = "https://" + url;
-      }
+      if (url && !url.startsWith("http")) url = "https://" + url;
       iframe.src = url || "about:blank";
-      
-      // Apply transformation
+
       applyTransform();
     }
 
     function animate() {
-      if (currentDevice) {
-        applyTransform();
-      }
+      applyTransform();
       requestAnimationFrame(animate);
-    }
-
-    function handleResize() {
-      if (currentDevice) {
-        applyTransform();
-      }
     }
 
     function setupEventListeners() {
       document.getElementById("load").onclick = loadDevice;
       deviceSelect.onchange = loadDevice;
-      
+
       slider.oninput = () => {
         manualScale = parseFloat(slider.value);
-        if (currentDevice) {
-          applyTransform();
-        }
+        applyTransform();
       };
-      
+
       document.getElementById("rotateLeft").onclick = () => {
         rotation -= 90;
-        if (currentDevice) {
-          setupViewportContainer(currentDevice);
-          applyTransform();
-        }
+        setupViewportContainer(currentDevice);
+        applyTransform();
       };
-      
+
       document.getElementById("rotateRight").onclick = () => {
         rotation += 90;
-        if (currentDevice) {
-          setupViewportContainer(currentDevice);
-          applyTransform();
-        }
+        setupViewportContainer(currentDevice);
+        applyTransform();
       };
-      
-      // Drag to move
+
       moveHandle.onmousedown = (e) => {
         dragging = true;
         start = { x: e.clientX, y: e.clientY };
         moveHandle.style.cursor = 'grabbing';
         e.preventDefault();
       };
-      
+
       window.onmousemove = (e) => {
         if (!dragging) return;
         targetPos.x += e.clientX - start.x;
         targetPos.y += e.clientY - start.y;
         start = { x: e.clientX, y: e.clientY };
       };
-      
-      window.onmouseup = () => {
-        dragging = false;
-        moveHandle.style.cursor = 'grab';
-      };
-      
-      // Touch support for mobile
+
+      window.onmouseup = () => { dragging = false; moveHandle.style.cursor = 'grab'; };
+
       moveHandle.addEventListener('touchstart', (e) => {
         dragging = true;
         const touch = e.touches[0];
         start = { x: touch.clientX, y: touch.clientY };
         e.preventDefault();
       });
-      
+
       window.addEventListener('touchmove', (e) => {
         if (!dragging) return;
         const touch = e.touches[0];
@@ -648,36 +600,24 @@
         start = { x: touch.clientX, y: touch.clientY };
         e.preventDefault();
       });
-      
-      window.addEventListener('touchend', () => {
-        dragging = false;
-      });
-      
-      // Backstage color picker
-      colorPicker.oninput = (e) => {
-        document.documentElement.style.setProperty('--backstage-bg', e.target.value);
-      };
-      
-      // URL input - press Enter to load
+
+      window.addEventListener('touchend', () => dragging = false);
+
+      colorPicker.oninput = (e) => document.documentElement.style.setProperty('--backstage-bg', e.target.value);
+
       urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          loadDevice();
-        }
+        if (e.key === 'Enter') loadDevice();
       });
-      
-      // Window resize
-      window.addEventListener('resize', handleResize);
-      
-      // Simulate dynamic status bar time
+
+      window.addEventListener('resize', () => { applyTransform(); });
+
       setInterval(() => {
         const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                       now.getMinutes().toString().padStart(2, '0');
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         document.querySelector('.status-left').textContent = timeStr;
       }, 60000);
     }
 
-    // Initialize
     function init() {
       deviceSelect.selectedIndex = 0;
       setupEventListeners();
@@ -685,17 +625,10 @@
       animate();
     }
 
-    // Start when DOM is loaded
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+    } else init();
   </script>
 </body>
 
 </html>
-
-
-  
-

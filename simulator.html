@@ -478,20 +478,21 @@
         ? { width: device.viewport.h, height: device.viewport.w }
         : { width: device.viewport.w, height: device.viewport.h };
 
-      viewportContainer.style.width = `${viewport.width}px`;
-      viewportContainer.style.height = `${viewport.height}px`;
-
-      // swap frame width/height in landscape
+      // Position viewport inside the phone frame correctly
       const phoneWidth = isLandscape ? device.frame.h : device.frame.w;
       const phoneHeight = isLandscape ? device.frame.w : device.frame.h;
 
-      viewportContainer.style.top = `${(phoneHeight - viewport.height) / 2}px`;
-      viewportContainer.style.left = `${(phoneWidth - viewport.width) / 2}px`;
+      // Center viewport inside phone
+      const top = (phoneHeight - viewport.height) / 2;
+      const left = (phoneWidth - viewport.width) / 2;
 
-      // rotate the viewport itself
-      viewportContainer.style.transform = isLandscape
-        ? `rotate(${rotation}deg)`
-        : `rotate(0deg)`;
+      viewportContainer.style.width = `${viewport.width}px`;
+      viewportContainer.style.height = `${viewport.height}px`;
+      viewportContainer.style.top = `${top}px`;
+      viewportContainer.style.left = `${left}px`;
+
+      // Remove any rotation on viewport itself
+      viewportContainer.style.transform = `rotate(0deg)`;
 
       // status bar and iframe
       statusBar.style.height = `${device.statusBarHeight}px`;
@@ -500,6 +501,7 @@
 
       updateDeviceClass(device.type);
     }
+
 
 
 
@@ -536,10 +538,13 @@
 
       let url = urlInput.value.trim();
       if (url && !url.startsWith("http")) url = "https://" + url;
-      iframe.src = url || "about:blank";
+
+      // ✅ Default to home.html if URL input is empty
+      iframe.src = url || "home.html";
 
       applyTransform();
     }
+
 
     function animate() {
       applyTransform();

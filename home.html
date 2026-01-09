@@ -1,632 +1,304 @@
 <!DOCTYPE html>
-<html>
-
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Mobile Simulator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Modern iOS Home Screen</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b6cee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { 
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem", 
+                        "3xl": "1.5rem", 
+                        "full": "9999px" 
+                    },
+                    screens: {
+                        'xs': '320px',
+                        'sm': '375px',
+                        'md': '414px',
+                        'lg': '768px',
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
 
-  <style>
-    :root {
-      --sidebar-width: 260px;
-      --sidebar-width-mobile: 200px;
-      --accent-color: #4fc3f7;
-      --sidebar-bg: #0f0f0f;
-      --backstage-bg: #181717;
-      --input-bg: #1a1a1a;
-      --shadow: rgba(0, 0, 0, 0.4);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      margin: 0;
-      background: var(--backstage-bg);
-      color: white;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-    }
-
-    .app {
-      display: flex;
-      height: 100%;
-      width: 100%;
-      position: relative;
-    }
-
-    .controls {
-      width: var(--sidebar-width);
-      min-width: var(--sidebar-width-mobile);
-      padding: 20px;
-      border-right: 1px solid #222;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      background: var(--sidebar-bg);
-      z-index: 10;
-      overflow-y: auto;
-      max-height: 100vh;
-    }
-
-    .controls h3 {
-      margin: 0 0 12px;
-      font-size: 18px;
-      color: var(--accent-color);
-      font-weight: 500;
-    }
-
-    input,
-    select,
-    button {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 14px;
-      background: var(--input-bg);
-      color: white;
-      border: 1px solid #333;
-      border-radius: 8px;
-      transition: all 0.15s ease;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus,
-    button:focus {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 6px var(--accent-color);
-    }
-
-    input:hover,
-    select:hover,
-    button:hover {
-      background: #222;
-    }
-
-    select {
-      padding-right: 36px;
-      cursor: pointer;
-      appearance: none;
-    }
-
-    button {
-      font-weight: 500;
-      cursor: pointer;
-      background: var(--accent-color);
-      color: #000;
-      border: none;
-    }
-
-    label {
-      font-size: 13px;
-      opacity: 0.8;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input[type="range"] {
-      padding: 0;
-      height: 28px;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    input[type="range"]::-webkit-slider-runnable-track {
-      height: 4px;
-      background: #333;
-      border-radius: 2px;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      background: var(--accent-color);
-      border-radius: 50%;
-      margin-top: -5px;
-      cursor: pointer;
-    }
-
-    .rotate-buttons {
-      display: flex;
-      gap: 8px;
-      flex-wrap: nowrap;
-    }
-
-    .rotate-buttons button {
-      flex: 1;
-      font-size: 16px;
-      padding: 10px 0;
-      border-radius: 8px;
-      background: var(--input-bg);
-      color: white;
-      border: 1px solid #333;
-      transition: all 0.15s ease;
-    }
-
-    .rotate-buttons button:hover {
-      background: var(--accent-color);
-      color: #000;
-    }
-
-    .backstage-setting {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .backstage-setting input[type="color"] {
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border-radius: 8px;
-      border: 1px solid #333;
-      cursor: pointer;
-      background: #181717;
-    }
-
-    .backstage-setting input[type="color"]:hover {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 6px var(--accent-color);
-    }
-
-    .stage {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      background: var(--backstage-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .scaler {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform-origin: center;
-      transition: transform 0.2s ease-out;
-    }
-
-    .phone {
-      position: relative;
-      transform-origin: center;
-    }
-
-    .device-header {
-      position: absolute;
-      top: -64px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 10;
-    }
-
-    .device-label {
-      padding: 10px 22px;
-      font-size: 16px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(6px);
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .move-handle {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: grab;
-      user-select: none;
-      transition: background 0.15s ease;
-    }
-
-    .move-handle:hover {
-      background: rgba(255, 255, 255, 0.18);
-    }
-
-    .move-handle::before {
-      content: "✥";
-      font-size: 16px;
-      opacity: 0.75;
-    }
-
-    .viewport-container {
-      position: absolute;
-      background: transparent;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .phone-frame {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 3;
-    }
-
-    iframe {
-      width: 100%;
-      position: absolute;
-      border: none;
-      display: block;
-      left: 0;
-    }
-
-    .status-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 16px;
-      z-index: 2;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: #000;
-      background: #fff;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    .status-left {
-      display: flex;
-      align-items: center;
-      letter-spacing: -0.2px;
-    }
-
-    .status-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-right span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .status-right i {
-      font-size: 13px;
-    }
-
-    .device-android .status-bar {
-      background: #fff;
-      color: #000;
-      font-family: 'Roboto', sans-serif;
-    }
-
-    .device-ios .status-bar {
-      background: #fff;
-      color: #000;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-  </style>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+        /* Custom scrollbar hiding for cleaner mobile look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        
+        /* Improve touch targets */
+        @media (max-width: 768px) {
+            .touch-target {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+        
+        /* Prevent text size adjustment on orientation change */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        /* Safe area insets for modern mobile devices */
+        .safe-top {
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .safe-left {
+            padding-left: env(safe-area-inset-left);
+        }
+        
+        .safe-right {
+            padding-right: env(safe-area-inset-right);
+        }
+        
+        /* iOS-like bottom dock positioning */
+        .dock-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+        }
+        
+        /* Ensure content doesn't hide behind dock */
+        .content-with-dock {
+            padding-bottom: 120px; /* Space for dock */
+        }
+        
+        @media (min-width: 768px) {
+            .content-with-dock {
+                padding-bottom: 140px;
+            }
+        }
+        
+        /* Prevent body scroll when content is short */
+        body {
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 
-<body>
-  <div class="app">
-
-    <div class="controls">
-      <h3>Mobile Simulator</h3>
-      <input id="url" placeholder="example.com" type="url">
-      <select id="device"></select>
-      <button id="load">Load</button>
-
-      <div>
-        <label for="scaleSlider">Adjust Size</label>
-        <input type="range" id="scaleSlider" min="0.3" max="1.5" step="0.01" value="0.85">
-      </div>
-
-      <div>
-        <label>Rotate</label>
-        <div class="rotate-buttons">
-          <button id="rotateLeft" aria-label="Rotate Left">⟲</button>
-          <button id="rotateRight" aria-label="Rotate Right">⟳</button>
-        </div>
-      </div>
-
-      <div class="backstage-setting">
-        <span style="font-size:13px; opacity:0.8;">Backstage Color</span>
-        <input type="color" id="backstageColorPicker" value="#181717" aria-label="Backstage Color">
-      </div>
-    </div>
-
-    <div class="stage" id="stage">
-      <div class="scaler" id="scaler">
-        <div class="phone" id="phone">
-
-          <div class="device-header">
-            <div class="device-label" id="deviceLabel"></div>
-            <div class="move-handle" id="moveHandle" aria-label="Move device"></div>
-          </div>
-
-          <div class="viewport-container" id="viewportContainer">
-            <div class="status-bar" id="statusBar">
-              <div class="status-left" style="padding-left: 18px;">9:41</div>
-              <div class="status-right" style="padding-right: 15px;">
-                <span><i class="fas fa-signal"></i></span>
-                <span><i class="fas fa-wifi"></i></span>
-                <span><i class="fas fa-battery-full"></i></span>
-              </div>
+<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary selection:text-white">
+    <div class="relative flex flex-col min-h-screen w-full bg-background-light dark:bg-background-dark bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
+        <!-- Overlay for legibility over wallpaper -->
+        <div class="absolute inset-0 bg-background-dark/80 backdrop-blur-sm z-0"></div>
+        
+        <!-- Content Container with safe area support -->
+        <div class="relative z-10 flex flex-col min-h-screen w-full safe-top safe-left safe-right">
+            <!-- Search Bar -->
+            <div class="px-4 sm:px-5 md:px-6 py-3 sm:py-4">
+                <div class="relative w-full max-w-2xl mx-auto group">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4 pointer-events-none">
+                        <span class="material-symbols-outlined text-white/50 text-lg sm:text-xl">search</span>
+                    </div>
+                    <input
+                        class="touch-target block w-full p-3 sm:p-4 pl-10 sm:pl-12 text-sm sm:text-base text-white bg-white/10 border border-white/10 rounded-full placeholder-white/50 focus:ring-2 focus:ring-primary focus:border-transparent backdrop-blur-md shadow-lg transition-all"
+                        placeholder="Search apps or web..." required="" type="text" />
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 sm:pr-4 cursor-pointer">
+                        <span class="material-symbols-outlined text-white/50 text-lg sm:text-xl">mic</span>
+                    </div>
+                </div>
             </div>
-            <iframe id="appFrame" title="Mobile Preview"
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
-          </div>
-
-          <img id="frame" class="phone-frame" alt="Device frame">
-
+            
+            <!-- Hero Clock Widget -->
+            <div class="flex flex-col items-center justify-center pt-4 sm:pt-6 md:pt-8 pb-4 sm:pb-5 md:pb-6">
+                <h1 class="text-white tracking-tighter text-6xl xs:text-7xl sm:text-8xl md:text-[80px] font-bold leading-none drop-shadow-lg bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
+                    10:42
+                </h1>
+                <div class="flex items-center gap-2 mt-2 sm:mt-3 bg-white/5 px-3 sm:px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-md shadow-sm">
+                    <span class="material-symbols-outlined text-yellow-400 text-xs sm:text-sm">sunny</span>
+                    <h2 class="text-white/90 text-xs sm:text-sm font-medium tracking-wide">Mon, Oct 24 • 72° Clear</h2>
+                </div>
+            </div>
+            
+            <!-- App Grid with extra bottom padding for dock -->
+            <div class="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 pb-4 content-with-dock safe-bottom">
+                <!-- Grid adjusts based on screen size -->
+                <div class="grid grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-5 md:gap-x-4 md:gap-y-6">
+                    <!-- Row 1 -->
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200"
+                            data-alt="Blue gradient icon with chat bubble"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZz-mrDRN3_Ed3ysNV5UHT0lITkTsG-SVo_I4Z2ohRxiOdckeshdnbli40Dypyr4-FktwnZn6Gfv_9OpOZ6ly3ToWWGeJfVcFK_ork9eOkzRbeTFwZxPpWBBaCAfgfs5IoeXdlMDQocKFXwUJDJIB9pjZvfEG9GuLBJSPqUX4qsNUyL7hLgYAtEYfsKFD0Uhwcnjw7W3Ib878WVqmCipRRuSKdIfFXv5WvWx8WGjOK72_31Wi6PFn09_VPBpzIbDaXbqr5Hn-CkKU');">
+                            <div class="w-full h-full bg-blue-600/60 flex items-center justify-center backdrop-blur-[2px] rounded-[16px] sm:rounded-[18px]">
+                                <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">chat_bubble</span>
+                            </div>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Social</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">mail</span>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Mail</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-green-400 to-emerald-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">map</span>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Maps</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-white shadow-lg flex items-center justify-center border border-white/10 overflow-hidden group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200"
+                            data-alt="Abstract colorful photos icon"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwmaBjgIPvuzVHeQqJ-kAwopCN3aQmwsBl_8z8t1_-UzygLNT36Hb2QsoyoMXLK4vO9jM-1ygcbMP4REnzjiCzbYFK31yzanFWwW63NWAdvEVA3u26k8g8s2Vap4wdOmkVvzeR4N46T8eDtgw8BZiTXEmBgrTdJJ22r4PvIIG554IJQTpHNgDhEyHdvDEeIyvxMwCzKpH9HhrLe8qhW9voH6hGQSeFuw2T6vSt_eLzGa8otvnU6lJW-4h2OXzxpqm-IbpBGG6Kzvw'); background-size: cover;">
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Photos</p>
+                    </div>
+                    
+                    <!-- Row 2 -->
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-slate-500 to-slate-700 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">settings</span>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Settings</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-red-400 to-rose-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <div class="flex flex-col items-center">
+                                <span class="text-[9px] xs:text-[10px] font-bold uppercase text-white/80">Oct</span>
+                                <span class="text-lg xs:text-xl font-bold text-white leading-none">24</span>
+                            </div>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Calendar</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">edit_note</span>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Notes</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
+                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
+                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">music_note</span>
+                        </div>
+                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Music</p>
+                    </div>
+                </div>
+                <!-- Bottom Dock - Always at bottom -->
+                <div class="dock-container px-4 pb-4 safe-bottom">
+                    <div class="flex justify-around items-center bg-white/10 backdrop-blur-2xl border border-white/10 rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 shadow-2xl max-w-2xl mx-auto">
+                        <a class="flex flex-col items-center gap-1 group" href="#">
+                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
+                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">call</span>
+                            </div>
+                        </a>
+                        <a class="flex flex-col items-center gap-1 group" href="#">
+                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
+                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">public</span>
+                            </div>
+                        </a>
+                        <a class="flex flex-col items-center gap-1 group" href="#">
+                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
+                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">chat</span>
+                            </div>
+                        </a>
+                        <a class="flex flex-col items-center gap-1 group" href="#">
+                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-gray-200 to-gray-400 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
+                                <span class="material-symbols-outlined text-gray-800 text-[26px] sm:text-[30px] drop-shadow-sm">photo_camera</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-
-  </div>
-
-  <script>
-    const DEVICES = {
-      iphone8: {
-        name: "iPhone 8 / SE2 / SE3",
-        viewport: { w: 330, h: 565 },
-        frame: { w: 363, h: 750 },
-        statusBarHeight: 20,
-        type: "ios",
-        image: "./frames/iphone-se.png"
-      },
-      iphone14: {
-        name: "iPhone 14",
-        viewport: { w: 350, h: 805 },
-        frame: { w: 390, h: 844 },
-        statusBarHeight: 32,
-        type: "ios",
-        image: "./frames/iphone14.png"
-      },
-      iphone14Pro: {
-        name: "iPhone 14 Pro",
-        viewport: { w: 393, h: 852 },
-        frame: { w: 393, h: 852 },
-        statusBarHeight: 59,
-        type: "ios",
-        image: "https://uploads-ssl.webflow.com/61f50d4b7b6ec346656e2b57/637e9d9c18bde3563e5f0fb6_iPhone%2014.svg"
-      },
-      pixel7: {
-        name: "Pixel 7",
-        viewport: { w: 420, h: 915 },
-        frame: { w: 450, h: 960 },
-        statusBarHeight: 32,
-        type: "android",
-        image: "./frames/pixel7.png"
-      },
-      samsungS22: {
-        name: "Samsung S22",
-        viewport: { w: 335, h: 720 },
-        frame: { w: 363, h: 750 },
-        statusBarHeight: 24,
-        type: "android",
-        image: "./frames/s22.png"
-      },
-    };
-
-    const phone = document.getElementById("phone");
-    const iframe = document.getElementById("appFrame");
-    const frame = document.getElementById("frame");
-    const scaler = document.getElementById("scaler");
-    const stage = document.getElementById("stage");
-    const slider = document.getElementById("scaleSlider");
-    const moveHandle = document.getElementById("moveHandle");
-    const urlInput = document.getElementById("url");
-    const deviceSelect = document.getElementById("device");
-    const deviceLabel = document.getElementById("deviceLabel");
-    const colorPicker = document.getElementById("backstageColorPicker");
-    const statusBar = document.getElementById("statusBar");
-    const viewportContainer = document.getElementById("viewportContainer");
-
-    for (const key in DEVICES) {
-      const option = document.createElement("option");
-      option.value = key;
-      option.textContent = DEVICES[key].name;
-      deviceSelect.appendChild(option);
-    }
-
-    let manualScale = parseFloat(slider.value);
-    let rotation = 0;
-    let currentPos = { x: 0, y: 0 };
-    let targetPos = { x: 0, y: 0 };
-    let dragging = false;
-    let start = { x: 0, y: 0 };
-    let currentDevice = null;
-
-    function calculateViewportDimensions(device) {
-      const isLandscape = Math.abs(rotation % 180) === 90;
-      return isLandscape
-        ? { width: device.viewport.h, height: device.viewport.w }
-        : { width: device.viewport.w, height: device.viewport.h };
-    }
-
-    function updateDeviceClass(deviceType) {
-      phone.classList.remove('device-ios', 'device-android', 'landscape');
-      phone.classList.add(`device-${deviceType}`);
-      if (Math.abs(rotation % 180) === 90) phone.classList.add('landscape');
-    }
-
-    function setupViewportContainer(device) {
-      const isLandscape = Math.abs(rotation % 180) === 90;
-
-      // swap viewport width/height in landscape
-      const viewport = isLandscape
-        ? { width: device.viewport.h, height: device.viewport.w }
-        : { width: device.viewport.w, height: device.viewport.h };
-
-      viewportContainer.style.width = `${viewport.width}px`;
-      viewportContainer.style.height = `${viewport.height}px`;
-
-      // swap frame width/height in landscape
-      const phoneWidth = isLandscape ? device.frame.h : device.frame.w;
-      const phoneHeight = isLandscape ? device.frame.w : device.frame.h;
-
-      viewportContainer.style.top = `${(phoneHeight - viewport.height) / 2}px`;
-      viewportContainer.style.left = `${(phoneWidth - viewport.width) / 2}px`;
-
-      // rotate the viewport itself
-      viewportContainer.style.transform = isLandscape
-        ? `rotate(${rotation}deg)`
-        : `rotate(0deg)`;
-
-      // status bar and iframe
-      statusBar.style.height = `${device.statusBarHeight}px`;
-      iframe.style.height = `calc(100% - ${device.statusBarHeight}px)`;
-      iframe.style.top = `${device.statusBarHeight}px`;
-
-      updateDeviceClass(device.type);
-    }
-
-
-
-    function applyTransform() {
-      if (!currentDevice) return;
-      const stageWidth = stage.clientWidth;
-      const stageHeight = stage.clientHeight;
-      const phoneWidth = Math.abs(rotation % 180) === 90 ? currentDevice.frame.h : currentDevice.frame.w;
-      const phoneHeight = Math.abs(rotation % 180) === 90 ? currentDevice.frame.w : currentDevice.frame.h;
-
-      let fitScale = Math.min(stageWidth / phoneWidth, stageHeight / phoneHeight) * 0.9;
-      const finalScale = fitScale * manualScale;
-
-      currentPos.x += (targetPos.x - currentPos.x) * 0.18;
-      currentPos.y += (targetPos.y - currentPos.y) * 0.18;
-
-      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale}) rotate(${rotation}deg)`;
-    }
-
-    function loadDevice() {
-      const deviceKey = deviceSelect.value;
-      currentDevice = DEVICES[deviceKey];
-      if (!currentDevice) return;
-
-      deviceLabel.textContent = currentDevice.name;
-      phone.style.width = `${currentDevice.frame.w}px`;
-      phone.style.height = `${currentDevice.frame.h}px`;
-
-      setupViewportContainer(currentDevice);
-
-      frame.src = currentDevice.image;
-      frame.style.width = `${currentDevice.frame.w}px`;
-      frame.style.height = `${currentDevice.frame.h}px`;
-
-      let url = urlInput.value.trim();
-      if (url && !url.startsWith("http")) url = "https://" + url;
-      iframe.src = url || "about:blank";
-
-      applyTransform();
-    }
-
-    function animate() {
-      applyTransform();
-      requestAnimationFrame(animate);
-    }
-
-    function setupEventListeners() {
-      document.getElementById("load").onclick = loadDevice;
-      deviceSelect.onchange = loadDevice;
-
-      slider.oninput = () => {
-        manualScale = parseFloat(slider.value);
-        applyTransform();
-      };
-
-      document.getElementById("rotateLeft").onclick = () => {
-        rotation -= 90;
-        setupViewportContainer(currentDevice);
-        applyTransform();
-      };
-
-      document.getElementById("rotateRight").onclick = () => {
-        rotation += 90;
-        setupViewportContainer(currentDevice);
-        applyTransform();
-      };
-
-      moveHandle.onmousedown = (e) => {
-        dragging = true;
-        start = { x: e.clientX, y: e.clientY };
-        moveHandle.style.cursor = 'grabbing';
-        e.preventDefault();
-      };
-
-      window.onmousemove = (e) => {
-        if (!dragging) return;
-        targetPos.x += e.clientX - start.x;
-        targetPos.y += e.clientY - start.y;
-        start = { x: e.clientX, y: e.clientY };
-      };
-
-      window.onmouseup = () => { dragging = false; moveHandle.style.cursor = 'grab'; };
-
-      moveHandle.addEventListener('touchstart', (e) => {
-        dragging = true;
-        const touch = e.touches[0];
-        start = { x: touch.clientX, y: touch.clientY };
-        e.preventDefault();
-      });
-
-      window.addEventListener('touchmove', (e) => {
-        if (!dragging) return;
-        const touch = e.touches[0];
-        targetPos.x += touch.clientX - start.x;
-        targetPos.y += touch.clientY - start.y;
-        start = { x: touch.clientX, y: touch.clientY };
-        e.preventDefault();
-      });
-
-      window.addEventListener('touchend', () => dragging = false);
-
-      colorPicker.oninput = (e) => document.documentElement.style.setProperty('--backstage-bg', e.target.value);
-
-      urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') loadDevice();
-      });
-
-      window.addEventListener('resize', () => { applyTransform(); });
-
-      setInterval(() => {
-        const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        document.querySelector('.status-left').textContent = timeStr;
-      }, 60000);
-    }
-
-    function init() {
-      deviceSelect.selectedIndex = 0;
-      setupEventListeners();
-      loadDevice();
-      animate();
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else init();
-  </script>
+    
+    <script>
+        // Add touch feedback for mobile devices
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add active state for touch devices
+            const appIcons = document.querySelectorAll('.cursor-pointer');
+            
+            appIcons.forEach(icon => {
+                icon.addEventListener('touchstart', function() {
+                    this.classList.add('active');
+                }, { passive: true });
+                
+                icon.addEventListener('touchend', function() {
+                    this.classList.remove('active');
+                }, { passive: true });
+            });
+            
+            // Update clock with current time
+            function updateClock() {
+                const now = new Date();
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const clockElement = document.querySelector('h1');
+                if (clockElement) {
+                    clockElement.textContent = `${hours}:${minutes}`;
+                }
+            }
+            
+            // Update clock every minute
+            updateClock();
+            setInterval(updateClock, 60000);
+            
+            // Handle device orientation changes
+            window.addEventListener('orientationchange', function() {
+                // Brief timeout to allow orientation to complete
+                setTimeout(function() {
+                    window.scrollTo(0, 0);
+                }, 100);
+            });
+            
+            // Update date dynamically
+            function updateDate() {
+                const now = new Date();
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                const dayName = days[now.getDay()];
+                const monthName = months[now.getMonth()];
+                const dateNum = now.getDate();
+                const temp = Math.floor(Math.random() * 15) + 68; // Random temp between 68-82
+                
+                const dateElement = document.querySelector('.flex.items-center.gap-2.mt-2 h2');
+                if (dateElement) {
+                    dateElement.textContent = `${dayName}, ${monthName} ${dateNum} • ${temp}° Clear`;
+                }
+            }
+            
+            updateDate();
+        });
+    </script>
 </body>
-
 </html>
