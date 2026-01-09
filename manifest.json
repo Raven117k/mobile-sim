@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Mobile Simulator",
+  "version": "1.0",
+  "description": "Preview any site inside real mobile frames",
+  "action": {
+    "default_title": "Open Mobile Simulator"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["tabs"],
+  "host_permissions": ["<all_urls>"]
+}

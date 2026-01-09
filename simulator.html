@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Mobile Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --sidebar-width: 260px;
+      --sidebar-width-mobile: 200px;
+      --accent-color: #4fc3f7;
+      --sidebar-bg: #0f0f0f;
+      --backstage-bg: #181717;
+      --input-bg: #1a1a1a;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      background: var(--backstage-bg);
+      color: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    .controls {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width-mobile);
+      padding: 20px;
+      border-right: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--sidebar-bg);
+      z-index: 10;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .controls h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--accent-color);
+      font-weight: 500;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: var(--input-bg);
+      color: white;
+      border: 1px solid #333;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 6px var(--accent-color);
+    }
+
+    input:hover,
+    select:hover,
+    button:hover {
+      background: #222;
+    }
+
+    select {
+      padding-right: 36px;
+      cursor: pointer;
+      appearance: none;
+    }
+
+    button {
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+    }
+
+    label {
+      font-size: 13px;
+      opacity: 0.8;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      height: 28px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--accent-color);
+      border-radius: 50%;
+      margin-top: -5px;
+      cursor: pointer;
+    }
+
+    .rotate-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+
+    .rotate-buttons button {
+      flex: 1;
+      font-size: 16px;
+      padding: 10px 0;
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: white;
+      border: 1px solid #333;
+      transition: all 0.15s ease;
+    }
+
+    .rotate-buttons button:hover {
+      background: var(--accent-color);
+      color: #000;
+    }
+
+    .backstage-setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .backstage-setting input[type="color"] {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid #333;
+      cursor: pointer;
+      background: #181717;
+    }
+
+    .backstage-setting input[type="color"]:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 6px var(--accent-color);
+    }
+
+    .stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--backstage-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scaler {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center;
+      transition: transform 0.2s ease-out;
+    }
+
+    .phone {
+      position: relative;
+      transform-origin: center;
+    }
+
+    .device-header {
+      position: absolute;
+      top: -64px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .device-label {
+      padding: 10px 22px;
+      font-size: 16px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(6px);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .move-handle {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+
+    .move-handle:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .move-handle::before {
+      content: "✥";
+      font-size: 16px;
+      opacity: 0.75;
+    }
+
+    .viewport-container {
+      position: absolute;
+      background: transparent;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .phone-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    iframe {
+      width: 100%;
+      position: absolute;
+      border: none;
+      display: block;
+      left: 0;
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 2;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #000;
+      background: #fff;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      letter-spacing: -0.2px;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-right span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-right i {
+      font-size: 13px;
+    }
+
+    .device-android .status-bar {
+      background: #fff;
+      color: #000;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .device-ios .status-bar {
+      background: #fff;
+      color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+  <div class="app">
+
+    <div class="controls">
+      <h3>Mobile Simulator</h3>
+      <input id="url" placeholder="example.com" type="url">
+      <select id="device"></select>
+      <button id="load">Load</button>
+
+      <div>
+        <label for="scaleSlider">Adjust Size</label>
+        <input type="range" id="scaleSlider" min="0.3" max="1.5" step="0.01" value="0.85">
+      </div>
+
+      <div>
+        <label>Rotate</label>
+        <div class="rotate-buttons">
+          <button id="rotateLeft" aria-label="Rotate Left">⟲</button>
+          <button id="rotateRight" aria-label="Rotate Right">⟳</button>
+        </div>
+      </div>
+
+      <div class="backstage-setting">
+        <span style="font-size:13px; opacity:0.8;">Backstage Color</span>
+        <input type="color" id="backstageColorPicker" value="#181717" aria-label="Backstage Color">
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="scaler" id="scaler">
+        <div class="phone" id="phone">
+
+          <div class="device-header">
+            <div class="device-label" id="deviceLabel"></div>
+            <div class="move-handle" id="moveHandle" aria-label="Move device"></div>
+          </div>
+
+          <div class="viewport-container" id="viewportContainer">
+            <div class="status-bar" id="statusBar">
+              <div class="status-left" style="padding-left: 18px;">9:41</div>
+              <div class="status-right" style="padding-right: 15px;">
+                <span><i class="fas fa-signal"></i></span>
+                <span><i class="fas fa-wifi"></i></span>
+                <span><i class="fas fa-battery-full"></i></span>
+              </div>
+            </div>
+            <iframe id="appFrame" title="Mobile Preview"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
+
+          <img id="frame" class="phone-frame" alt="Device frame">
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const DEVICES = {
+      iphone8: {
+        name: "iPhone 8 / SE2 / SE3",
+        viewport: { w: 330, h: 565 },
+        frame: { w: 363, h: 750 },
+        statusBarHeight: 20,
+        type: "ios",
+        image: "./frames/iphone-se.png"
+      },
+      iphone14: {
+        name: "iPhone 14",
+        viewport: { w: 350, h: 805 },
+        frame: { w: 390, h: 844 },
+        statusBarHeight: 32,
+        type: "ios",
+        image: "./frames/iphone14.png"
+      },
+      iphone14Pro: {
+        name: "iPhone 14 Pro",
+        viewport: { w: 393, h: 852 },
+        frame: { w: 393, h: 852 },
+        statusBarHeight: 59,
+        type: "ios",
+        image: "https://uploads-ssl.webflow.com/61f50d4b7b6ec346656e2b57/637e9d9c18bde3563e5f0fb6_iPhone%2014.svg"
+      },
+      pixel7: {
+        name: "Pixel 7",
+        viewport: { w: 420, h: 915 },
+        frame: { w: 450, h: 960 },
+        statusBarHeight: 32,
+        type: "android",
+        image: "./frames/pixel7.png"
+      },
+      samsungS22: {
+        name: "Samsung S22",
+        viewport: { w: 335, h: 720 },
+        frame: { w: 363, h: 750 },
+        statusBarHeight: 24,
+        type: "android",
+        image: "./frames/s22.png"
+      },
+    };
+
+    const phone = document.getElementById("phone");
+    const iframe = document.getElementById("appFrame");
+    const frame = document.getElementById("frame");
+    const scaler = document.getElementById("scaler");
+    const stage = document.getElementById("stage");
+    const slider = document.getElementById("scaleSlider");
+    const moveHandle = document.getElementById("moveHandle");
+    const urlInput = document.getElementById("url");
+    const deviceSelect = document.getElementById("device");
+    const deviceLabel = document.getElementById("deviceLabel");
+    const colorPicker = document.getElementById("backstageColorPicker");
+    const statusBar = document.getElementById("statusBar");
+    const viewportContainer = document.getElementById("viewportContainer");
+
+    for (const key in DEVICES) {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = DEVICES[key].name;
+      deviceSelect.appendChild(option);
+    }
+
+    let manualScale = parseFloat(slider.value);
+    let rotation = 0;
+    let currentPos = { x: 0, y: 0 };
+    let targetPos = { x: 0, y: 0 };
+    let dragging = false;
+    let start = { x: 0, y: 0 };
+    let currentDevice = null;
+
+    function calculateViewportDimensions(device) {
+      const isLandscape = Math.abs(rotation % 180) === 90;
+      return isLandscape
+        ? { width: device.viewport.h, height: device.viewport.w }
+        : { width: device.viewport.w, height: device.viewport.h };
+    }
+
+    function updateDeviceClass(deviceType) {
+      phone.classList.remove('device-ios', 'device-android', 'landscape');
+      phone.classList.add(`device-${deviceType}`);
+      if (Math.abs(rotation % 180) === 90) phone.classList.add('landscape');
+    }
+
+    function setupViewportContainer(device) {
+      const isLandscape = Math.abs(rotation % 180) === 90;
+
+      // swap viewport width/height in landscape
+      const viewport = isLandscape
+        ? { width: device.viewport.h, height: device.viewport.w }
+        : { width: device.viewport.w, height: device.viewport.h };
+
+      viewportContainer.style.width = `${viewport.width}px`;
+      viewportContainer.style.height = `${viewport.height}px`;
+
+      // swap frame width/height in landscape
+      const phoneWidth = isLandscape ? device.frame.h : device.frame.w;
+      const phoneHeight = isLandscape ? device.frame.w : device.frame.h;
+
+      viewportContainer.style.top = `${(phoneHeight - viewport.height) / 2}px`;
+      viewportContainer.style.left = `${(phoneWidth - viewport.width) / 2}px`;
+
+      // rotate the viewport itself
+      viewportContainer.style.transform = isLandscape
+        ? `rotate(${rotation}deg)`
+        : `rotate(0deg)`;
+
+      // status bar and iframe
+      statusBar.style.height = `${device.statusBarHeight}px`;
+      iframe.style.height = `calc(100% - ${device.statusBarHeight}px)`;
+      iframe.style.top = `${device.statusBarHeight}px`;
+
+      updateDeviceClass(device.type);
+    }
+
+
+
+    function applyTransform() {
+      if (!currentDevice) return;
+      const stageWidth = stage.clientWidth;
+      const stageHeight = stage.clientHeight;
+      const phoneWidth = Math.abs(rotation % 180) === 90 ? currentDevice.frame.h : currentDevice.frame.w;
+      const phoneHeight = Math.abs(rotation % 180) === 90 ? currentDevice.frame.w : currentDevice.frame.h;
+
+      let fitScale = Math.min(stageWidth / phoneWidth, stageHeight / phoneHeight) * 0.9;
+      const finalScale = fitScale * manualScale;
+
+      currentPos.x += (targetPos.x - currentPos.x) * 0.18;
+      currentPos.y += (targetPos.y - currentPos.y) * 0.18;
+
+      scaler.style.transform = `translate(-50%, -50%) translate(${currentPos.x}px, ${currentPos.y}px) scale(${finalScale}) rotate(${rotation}deg)`;
+    }
+
+    function loadDevice() {
+      const deviceKey = deviceSelect.value;
+      currentDevice = DEVICES[deviceKey];
+      if (!currentDevice) return;
+
+      deviceLabel.textContent = currentDevice.name;
+      phone.style.width = `${currentDevice.frame.w}px`;
+      phone.style.height = `${currentDevice.frame.h}px`;
+
+      setupViewportContainer(currentDevice);
+
+      frame.src = currentDevice.image;
+      frame.style.width = `${currentDevice.frame.w}px`;
+      frame.style.height = `${currentDevice.frame.h}px`;
+
+      let url = urlInput.value.trim();
+      if (url && !url.startsWith("http")) url = "https://" + url;
+      iframe.src = url || "about:blank";
+
+      applyTransform();
+    }
+
+    function animate() {
+      applyTransform();
+      requestAnimationFrame(animate);
+    }
+
+    function setupEventListeners() {
+      document.getElementById("load").onclick = loadDevice;
+      deviceSelect.onchange = loadDevice;
+
+      slider.oninput = () => {
+        manualScale = parseFloat(slider.value);
+        applyTransform();
+      };
+
+      document.getElementById("rotateLeft").onclick = () => {
+        rotation -= 90;
+        setupViewportContainer(currentDevice);
+        applyTransform();
+      };
+
+      document.getElementById("rotateRight").onclick = () => {
+        rotation += 90;
+        setupViewportContainer(currentDevice);
+        applyTransform();
+      };
+
+      moveHandle.onmousedown = (e) => {
+        dragging = true;
+        start = { x: e.clientX, y: e.clientY };
+        moveHandle.style.cursor = 'grabbing';
+        e.preventDefault();
+      };
+
+      window.onmousemove = (e) => {
+        if (!dragging) return;
+        targetPos.x += e.clientX - start.x;
+        targetPos.y += e.clientY - start.y;
+        start = { x: e.clientX, y: e.clientY };
+      };
+
+      window.onmouseup = () => { dragging = false; moveHandle.style.cursor = 'grab'; };
+
+      moveHandle.addEventListener('touchstart', (e) => {
+        dragging = true;
+        const touch = e.touches[0];
+        start = { x: touch.clientX, y: touch.clientY };
+        e.preventDefault();
+      });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!dragging) return;
+        const touch = e.touches[0];
+        targetPos.x += touch.clientX - start.x;
+        targetPos.y += touch.clientY - start.y;
+        start = { x: touch.clientX, y: touch.clientY };
+        e.preventDefault();
+      });
+
+      window.addEventListener('touchend', () => dragging = false);
+
+      colorPicker.oninput = (e) => document.documentElement.style.setProperty('--backstage-bg', e.target.value);
+
+      urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') loadDevice();
+      });
+
+      window.addEventListener('resize', () => { applyTransform(); });
+
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        document.querySelector('.status-left').textContent = timeStr;
+      }, 60000);
+    }
+
+    function init() {
+      deviceSelect.selectedIndex = 0;
+      setupEventListeners();
+      loadDevice();
+      animate();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else init();
+  </script>
+</body>
+
+</html>
