@@ -1,304 +1,316 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Modern iOS Home Screen</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#2b6cee",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#101622",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: { 
-                        "DEFAULT": "0.25rem", 
-                        "lg": "0.5rem", 
-                        "xl": "0.75rem", 
-                        "2xl": "1rem", 
-                        "3xl": "1.5rem", 
-                        "full": "9999px" 
-                    },
-                    screens: {
-                        'xs': '320px',
-                        'sm': '375px',
-                        'md': '414px',
-                        'lg': '768px',
-                    },
-                },
-            },
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+
     <style>
+        /* Reset & base */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            background-image: url('./images/ios.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding-top: env(safe-area-inset-top);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Search bar */
+        .search-bar {
+            width: 90%;
+            max-width: 500px;
+            margin: 1rem auto;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            backdrop-filter: blur(8px);
+        }
+
+        .search-bar .icon-left,
+        .search-bar .icon-right {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .search-bar .icon-left {
+            left: 0.75rem;
+        }
+
+        .search-bar .icon-right {
+            right: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* Clock widget */
+        .clock-widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .clock-widget h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .clock-sub {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(6px);
+            margin-top: 0.5rem;
+            font-size: clamp(0.65rem, 2vw, 0.9rem);
+        }
+
+        /* App grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 0.5rem;
+            padding: 0 1rem 140px;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+        }
+
+        .app-icon {
+            width: clamp(48px, 10vw, 56px);
+            height: clamp(48px, 10vw, 56px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .app-icon:active {
+            filter: brightness(0.9);
+        }
+
+        .app-label {
+            font-size: clamp(0.65rem, 2vw, 0.85rem);
+            text-align: center;
+        }
+
+        /* Dock */
+        .dock-container {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: env(safe-area-inset-bottom, 10px);
+            display: flex;
+            justify-content: center;
+            z-index: 50;
+            padding: 0 0.5rem;
+        }
+
+        .dock {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 0.5rem clamp(1rem, 5vw, 2rem);
+            max-width: 95%;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-10px);
+            gap: clamp(0.5rem, 4vw, 1.5rem);
+            flex-wrap: wrap;
+        }
+
+        .dock a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            text-decoration: none;
+        }
+
+        .dock-icon {
+            width: clamp(48px, 12vw, 60px);
+            height: clamp(48px, 12vw, 60px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: filter 0.2s, transform 0.2s;
+            color: white;
+        }
+
+        .dock-icon:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        .dock-icon:active {
+            filter: brightness(0.9);
+        }
+
+        /* Material icons scaling */
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* Custom scrollbar hiding for cleaner mobile look */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-        
-        /* Improve touch targets */
-        @media (max-width: 768px) {
-            .touch-target {
-                min-height: 44px;
-                min-width: 44px;
+        /* Large screens tweaks */
+        @media(min-width: 768px) {
+            .dock {
+                border-radius: 32px;
+                padding: 1rem 2rem;
             }
-        }
-        
-        /* Prevent text size adjustment on orientation change */
-        html {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
-        
-        /* Safe area insets for modern mobile devices */
-        .safe-top {
-            padding-top: env(safe-area-inset-top);
-        }
-        
-        .safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        
-        .safe-left {
-            padding-left: env(safe-area-inset-left);
-        }
-        
-        .safe-right {
-            padding-right: env(safe-area-inset-right);
-        }
-        
-        /* iOS-like bottom dock positioning */
-        .dock-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 50;
-        }
-        
-        /* Ensure content doesn't hide behind dock */
-        .content-with-dock {
-            padding-bottom: 120px; /* Space for dock */
-        }
-        
-        @media (min-width: 768px) {
-            .content-with-dock {
-                padding-bottom: 140px;
+
+            .clock-sub {
+                font-size: 0.9rem;
             }
-        }
-        
-        /* Prevent body scroll when content is short */
-        body {
-            overflow-x: hidden;
-            min-height: 100vh;
         }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary selection:text-white">
-    <div class="relative flex flex-col min-h-screen w-full bg-background-light dark:bg-background-dark bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
-        <!-- Overlay for legibility over wallpaper -->
-        <div class="absolute inset-0 bg-background-dark/80 backdrop-blur-sm z-0"></div>
-        
-        <!-- Content Container with safe area support -->
-        <div class="relative z-10 flex flex-col min-h-screen w-full safe-top safe-left safe-right">
-            <!-- Search Bar -->
-            <div class="px-4 sm:px-5 md:px-6 py-3 sm:py-4">
-                <div class="relative w-full max-w-2xl mx-auto group">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4 pointer-events-none">
-                        <span class="material-symbols-outlined text-white/50 text-lg sm:text-xl">search</span>
-                    </div>
-                    <input
-                        class="touch-target block w-full p-3 sm:p-4 pl-10 sm:pl-12 text-sm sm:text-base text-white bg-white/10 border border-white/10 rounded-full placeholder-white/50 focus:ring-2 focus:ring-primary focus:border-transparent backdrop-blur-md shadow-lg transition-all"
-                        placeholder="Search apps or web..." required="" type="text" />
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 sm:pr-4 cursor-pointer">
-                        <span class="material-symbols-outlined text-white/50 text-lg sm:text-xl">mic</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Hero Clock Widget -->
-            <div class="flex flex-col items-center justify-center pt-4 sm:pt-6 md:pt-8 pb-4 sm:pb-5 md:pb-6">
-                <h1 class="text-white tracking-tighter text-6xl xs:text-7xl sm:text-8xl md:text-[80px] font-bold leading-none drop-shadow-lg bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
-                    10:42
-                </h1>
-                <div class="flex items-center gap-2 mt-2 sm:mt-3 bg-white/5 px-3 sm:px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-md shadow-sm">
-                    <span class="material-symbols-outlined text-yellow-400 text-xs sm:text-sm">sunny</span>
-                    <h2 class="text-white/90 text-xs sm:text-sm font-medium tracking-wide">Mon, Oct 24 • 72° Clear</h2>
-                </div>
-            </div>
-            
-            <!-- App Grid with extra bottom padding for dock -->
-            <div class="flex-1 overflow-y-auto px-4 sm:px-5 md:px-6 pb-4 content-with-dock safe-bottom">
-                <!-- Grid adjusts based on screen size -->
-                <div class="grid grid-cols-4 gap-x-3 gap-y-4 sm:gap-x-4 sm:gap-y-5 md:gap-x-4 md:gap-y-6">
-                    <!-- Row 1 -->
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200"
-                            data-alt="Blue gradient icon with chat bubble"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZz-mrDRN3_Ed3ysNV5UHT0lITkTsG-SVo_I4Z2ohRxiOdckeshdnbli40Dypyr4-FktwnZn6Gfv_9OpOZ6ly3ToWWGeJfVcFK_ork9eOkzRbeTFwZxPpWBBaCAfgfs5IoeXdlMDQocKFXwUJDJIB9pjZvfEG9GuLBJSPqUX4qsNUyL7hLgYAtEYfsKFD0Uhwcnjw7W3Ib878WVqmCipRRuSKdIfFXv5WvWx8WGjOK72_31Wi6PFn09_VPBpzIbDaXbqr5Hn-CkKU');">
-                            <div class="w-full h-full bg-blue-600/60 flex items-center justify-center backdrop-blur-[2px] rounded-[16px] sm:rounded-[18px]">
-                                <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">chat_bubble</span>
-                            </div>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Social</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">mail</span>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Mail</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-green-400 to-emerald-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">map</span>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Maps</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-white shadow-lg flex items-center justify-center border border-white/10 overflow-hidden group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200"
-                            data-alt="Abstract colorful photos icon"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwmaBjgIPvuzVHeQqJ-kAwopCN3aQmwsBl_8z8t1_-UzygLNT36Hb2QsoyoMXLK4vO9jM-1ygcbMP4REnzjiCzbYFK31yzanFWwW63NWAdvEVA3u26k8g8s2Vap4wdOmkVvzeR4N46T8eDtgw8BZiTXEmBgrTdJJ22r4PvIIG554IJQTpHNgDhEyHdvDEeIyvxMwCzKpH9HhrLe8qhW9voH6hGQSeFuw2T6vSt_eLzGa8otvnU6lJW-4h2OXzxpqm-IbpBGG6Kzvw'); background-size: cover;">
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Photos</p>
-                    </div>
-                    
-                    <!-- Row 2 -->
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-slate-500 to-slate-700 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">settings</span>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Settings</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-red-400 to-rose-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <div class="flex flex-col items-center">
-                                <span class="text-[9px] xs:text-[10px] font-bold uppercase text-white/80">Oct</span>
-                                <span class="text-lg xs:text-xl font-bold text-white leading-none">24</span>
-                            </div>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Calendar</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">edit_note</span>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Notes</p>
-                    </div>
-                    
-                    <div class="flex flex-col items-center gap-1.5 sm:gap-2 group cursor-pointer">
-                        <div class="w-full aspect-square rounded-[16px] sm:rounded-[18px] bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg flex items-center justify-center border border-white/10 group-active:scale-95 sm:group-hover:scale-105 transition-transform duration-200">
-                            <span class="material-symbols-outlined text-2xl sm:text-3xl text-white drop-shadow-md">music_note</span>
-                        </div>
-                        <p class="text-white text-[10px] xs:text-[11px] font-medium text-center drop-shadow-md">Music</p>
-                    </div>
-                </div>
-                <!-- Bottom Dock - Always at bottom -->
-                <div class="dock-container px-4 pb-4 safe-bottom">
-                    <div class="flex justify-around items-center bg-white/10 backdrop-blur-2xl border border-white/10 rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 shadow-2xl max-w-2xl mx-auto">
-                        <a class="flex flex-col items-center gap-1 group" href="#">
-                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
-                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">call</span>
-                            </div>
-                        </a>
-                        <a class="flex flex-col items-center gap-1 group" href="#">
-                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
-                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">public</span>
-                            </div>
-                        </a>
-                        <a class="flex flex-col items-center gap-1 group" href="#">
-                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
-                                <span class="material-symbols-outlined text-white text-[26px] sm:text-[30px] drop-shadow-sm">chat</span>
-                            </div>
-                        </a>
-                        <a class="flex flex-col items-center gap-1 group" href="#">
-                            <div class="w-[48px] h-[48px] sm:w-[56px] sm:h-[56px] rounded-[14px] sm:rounded-[16px] bg-gradient-to-br from-gray-200 to-gray-400 flex items-center justify-center shadow-lg group-active:brightness-90 sm:group-hover:brightness-110 transition-all duration-200">
-                                <span class="material-symbols-outlined text-gray-800 text-[26px] sm:text-[30px] drop-shadow-sm">photo_camera</span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+
+        <!-- Search bar -->
+        <div class="search-bar">
+        </div>
+        <!-- Search bar -->
+        <div class="search-bar">
+        </div>
+
+        <!-- Clock -->
+        <div class="clock-widget">
+            <h1>10:42</h1>
+            <div class="clock-sub">
+                <span class="material-symbols-outlined" style="color:gold;">sunny</span>
+                <span>Mon, Oct 24 • 72° Clear</span>
             </div>
         </div>
+        <!-- Search bar -->
+        <div class="search-bar">
+        </div>
+
+        <!-- App grid -->
+        <div class="app-grid">
+            <div class="app-item">
+                <div class="app-icon" style="background: linear-gradient(to bottom right, #3b82f6, #1e40af);">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                </div>
+                <span class="app-label">Social</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon" style="background: linear-gradient(to bottom right, #38bdf8, #1d4ed8);">
+                    <span class="material-symbols-outlined">mail</span>
+                </div>
+                <span class="app-label">Mail</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon" style="background: linear-gradient(to bottom right, #22c55e, #065f46);">
+                    <span class="material-symbols-outlined">map</span>
+                </div>
+                <span class="app-label">Maps</span>
+            </div>
+            <div class="app-item">
+                <div class="app-icon" style="background: linear-gradient(to bottom right, #e5e7eb, #9ca3af);">
+                    <span class="material-symbols-outlined" style="color:#111;">photo_camera</span>
+                </div>
+                <span class="app-label">Photos</span>
+            </div>
+        </div>
+
+        <!-- Bottom dock -->
+        <div class="dock-container">
+            <div class="dock">
+                <a href="#">
+                    <div class="dock-icon" style="background: linear-gradient(to bottom right,#22c55e,#065f46);">
+                        <span class="material-symbols-outlined">call</span>
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="dock-icon" style="background: linear-gradient(to bottom right,#3b82f6,#1e40af);">
+                        <span class="material-symbols-outlined">public</span>
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="dock-icon" style="background: linear-gradient(to bottom right,#22c55e,#065f46);">
+                        <span class="material-symbols-outlined">chat</span>
+                    </div>
+                </a>
+                <a href="#">
+                    <div class="dock-icon" style="background: linear-gradient(to bottom right,#e5e7eb,#9ca3af);">
+                        <span class="material-symbols-outlined" style="color:#111;">photo_camera</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
     </div>
-    
-    <script>
-        // Add touch feedback for mobile devices
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add active state for touch devices
-            const appIcons = document.querySelectorAll('.cursor-pointer');
-            
-            appIcons.forEach(icon => {
-                icon.addEventListener('touchstart', function() {
-                    this.classList.add('active');
-                }, { passive: true });
-                
-                icon.addEventListener('touchend', function() {
-                    this.classList.remove('active');
-                }, { passive: true });
-            });
-            
-            // Update clock with current time
-            function updateClock() {
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
-                const minutes = now.getMinutes().toString().padStart(2, '0');
-                const clockElement = document.querySelector('h1');
-                if (clockElement) {
-                    clockElement.textContent = `${hours}:${minutes}`;
-                }
-            }
-            
-            // Update clock every minute
-            updateClock();
-            setInterval(updateClock, 60000);
-            
-            // Handle device orientation changes
-            window.addEventListener('orientationchange', function() {
-                // Brief timeout to allow orientation to complete
-                setTimeout(function() {
-                    window.scrollTo(0, 0);
-                }, 100);
-            });
-            
-            // Update date dynamically
-            function updateDate() {
-                const now = new Date();
-                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                
-                const dayName = days[now.getDay()];
-                const monthName = months[now.getMonth()];
-                const dateNum = now.getDate();
-                const temp = Math.floor(Math.random() * 15) + 68; // Random temp between 68-82
-                
-                const dateElement = document.querySelector('.flex.items-center.gap-2.mt-2 h2');
-                if (dateElement) {
-                    dateElement.textContent = `${dayName}, ${monthName} ${dateNum} • ${temp}° Clear`;
-                }
-            }
-            
-            updateDate();
-        });
-    </script>
 </body>
+
 </html>
