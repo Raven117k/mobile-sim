@@ -12,6 +12,8 @@ const deviceLabel = document.getElementById("deviceLabel");
 const colorPicker = document.getElementById("backstageColorPicker");
 const statusBar = document.getElementById("statusBar");
 const viewportContainer = document.getElementById("viewportContainer");
+const bgImageToggle = document.getElementById("bgImageToggle");
+
 
 for (const key in DEVICES) {
   const option = document.createElement("option");
@@ -112,6 +114,18 @@ function setupEventListeners() {
   window.addEventListener('touchend', () => dragging = false);
 
   colorPicker.oninput = (e) => document.documentElement.style.setProperty('--backstage-bg', e.target.value);
+  document.getElementById('resetDeviceBtn').onclick = refreshDevice;
+
+  bgImageToggle.checked = true;
+  stage.classList.add("bg-image");
+  bgImageToggle.onchange = (e) => {
+    if (e.target.checked) {
+      stage.classList.add("bg-image");
+    } else {
+      stage.classList.remove("bg-image");
+    }
+  };
+
 
   urlInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadDevice(); });
   window.addEventListener('resize', () => applyTransform());
@@ -135,3 +149,10 @@ function init() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else init();
+
+function refreshDevice() {
+  if (!iframe) return;
+
+  // simple iframe reload
+  iframe.src = iframe.src;
+}

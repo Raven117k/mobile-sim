@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Mobile Simulator",
+  "name": "Mobi-Sim",
   "version": "1.0",
-  "description": "Preview any site inside real mobile frames",
+  "description": "Preview websites in realistic mobile device frames instantly.",
   "action": {
     "default_title": "Open Mobile Simulator",
     "default_icon": {

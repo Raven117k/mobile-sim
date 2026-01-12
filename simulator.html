@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Mobile Simulator</title>
+  <title>Mobi-Sim</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/CSS/simulator.css">
   <link rel="icon" type="image/png" href="/icons/icon.png">
@@ -14,8 +14,8 @@
   <div class="app">
 
     <div class="controls">
-      <h3>Mobile Simulator</h3>
-      <input id="url" placeholder="example.com" type="url">
+      <h3>Mobi-Sim</h3>
+      <input id="url" placeholder="Enter Your Project URL" type="url">
       <select id="device"></select>
       <button id="load">Load</button>
 
@@ -37,10 +37,25 @@
         <button id="resetPageBtn" style="width:auto; padding:6px 12px;">Reset</button>
       </div>
 
+      <div class="reset-page-setting">
+        <span style="font-size:13px; opacity:0.8;">Reset Device</span>
+        <button id="resetDeviceBtn" style="width:auto; padding:6px 12px;">Reset</button>
+      </div>
+
+      <div class="backstage-setting toggle-setting">
+        <span>Background Image</span>
+
+        <label class="toggle">
+          <input type="checkbox" id="bgImageToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
       <div class="backstage-setting">
         <span style="font-size:13px; opacity:0.8;">Backstage Color</span>
         <input type="color" id="backstageColorPicker" value="#181717" aria-label="Backstage Color">
       </div>
+
     </div>
     <div class="stage" id="stage">
       <div class="scaler" id="scaler">
