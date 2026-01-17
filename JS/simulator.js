@@ -156,3 +156,54 @@ function refreshDevice() {
   // simple iframe reload
   iframe.src = iframe.src;
 }
+
+
+document.getElementById("screenshotBtn").onclick = () => {
+  chrome.runtime.sendMessage(
+    { type: "CAPTURE_SCREENSHOT" },
+    (response) => {
+      if (!response || !response.image) return;
+      cropToPhone(response.image);
+    }
+  );
+};
+
+
+function cropToPhone(dataUrl) {
+  const phone = document.getElementById("phone");
+  const rect = phone.getBoundingClientRect();
+
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    const scale = window.devicePixelRatio;
+
+    canvas.width = rect.width * scale;
+    canvas.height = rect.height * scale;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+      img,
+      rect.left * scale,
+      rect.top * scale,
+      rect.width * scale,
+      rect.height * scale,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    downloadImage(canvas);
+  };
+
+  img.src = dataUrl;
+}
+
+function downloadImage(canvas) {
+  const link = document.createElement("a");
+  link.download = `mobi-sim-${Date.now()}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}

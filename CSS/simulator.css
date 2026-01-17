@@ -16,13 +16,14 @@
     padding: 0;
 }
 
-body {
+html,body {
+    padding: 0;
     margin: 0;
     background: var(--backstage-bg);
     color: white;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -44,7 +45,7 @@ body {
     background: var(--sidebar-bg);
     z-index: 10;
     overflow-y: auto;
-    max-height: 100vh;
+    height: 100vh;
 }
 
 .controls h3 {
@@ -170,19 +171,13 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 0 6px var(--accent-color);
 }
 
-/* .stage {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    background: var(--backstage-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-} */
+
 .stage {
     flex: 1;
     position: relative;
     overflow: hidden;
+    min-width: 0;
+    min-height: 0;
     background: var(--backstage-bg);
     display: flex;
     align-items: center;
@@ -275,11 +270,14 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 iframe {
+    margin: 0;
+    padding: 0;
     width: 100%;
     position: absolute;
     border: none;
     display: block;
     left: 0;
+    overflow: hidden;
 }
 
 .status-bar {

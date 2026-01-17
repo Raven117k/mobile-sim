@@ -1,22 +1,25 @@
 {
   "manifest_version": 3,
   "name": "Mobi-Sim",
-  "version": "1.0",
+  "version": "1.0.2",
   "description": "Preview websites in realistic mobile device frames instantly.",
+
   "action": {
-    "default_title": "Open Mobile Simulator",
-    "default_icon": {
-      "16": "icons/icon.png",
-      "32": "icons/icon.png",
-      "48": "icons/icon.png",
-      "128": "icons/icon.png"
-    }
+    "default_title": "Open Mobile Simulator"
   },
+
   "background": {
-    "service_worker": "/JS/background.js"
+    "service_worker": "JS/background.js"
   },
-  "permissions": ["tabs"],
-  "host_permissions": ["<all_urls>"],
+
+  "permissions": [
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
   "icons": {
     "16": "icons/icon.png",
     "32": "icons/icon.png",
